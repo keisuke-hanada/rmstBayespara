@@ -33,7 +33,7 @@ rmstpara(
 An object of class brmsfit or stanfit. See rstan and brms.
 }
 \description{
-A function of calculating restricted mean survival time via parametric models. Exponential, Weibull, log-normal and log-logisric models are available.
+A function of calculating restricted mean survival time via parametric models. Exponential, Weibull, log-normal and log-logistic models are available.
 }
 \examples{
 

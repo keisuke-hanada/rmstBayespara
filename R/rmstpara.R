@@ -1,5 +1,5 @@
 #' Restricted mean survival time via parametric models
-#' @description A function of calculating restricted mean survival time via parametric models. Exponential, Weibull, log-normal and log-logisric models are available.
+#' @description A function of calculating restricted mean survival time via parametric models. Exponential, Weibull, log-normal and log-logistic models are available.
 #'
 #' @name rmstpara
 #'
