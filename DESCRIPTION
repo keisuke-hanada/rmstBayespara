@@ -18,7 +18,7 @@ Imports:
     methods,
     Rcpp (>= 1.0.0),
     RcppParallel (>= 5.1.7),
-    rstan (>= 2.32.6),
+    rstan (>= 2.32.0),
     rstantools (>= 2.4.0),
     brms (>= 2.21.0),
     loo (>= 2.7.0),
@@ -26,9 +26,9 @@ Imports:
     stats (>= 4.3.0)
 LinkingTo: 
     BH (>= 1.84.0),
-    Rcpp (>= 1.0.0),
-    RcppEigen (>= 0.3.4.0.0),
+    Rcpp (>= 0.12.0),
+    RcppEigen (>= 0.3.3.3.0),
     RcppParallel (>= 5.0.1),
-    rstan (>= 2.32.6),
-    StanHeaders (>= 2.32.9)
+    StanHeaders (>= 2.32.0),
+    rstan (>= 2.32.0)
 SystemRequirements: GNU Make
