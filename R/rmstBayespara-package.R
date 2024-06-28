@@ -8,7 +8,6 @@
 #' @import methods
 #' @import Rcpp
 #' @import brms
-#' @import StanHeaders
 #' @import rstan
 #' @importFrom rstantools rstan_config
 #' @importFrom RcppParallel RcppParallelLibs

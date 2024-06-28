@@ -23,8 +23,7 @@ Imports:
     brms (>= 2.21.0),
     loo (>= 2.7.0),
     zipfR (>= 0.6.7),
-    stats (>= 4.3.0),
-    StanHeaders (>= 2.32.9)
+    stats (>= 4.3.0)
 LinkingTo: 
     BH (>= 1.84.0),
     Rcpp (>= 1.0.0),
