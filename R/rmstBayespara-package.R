@@ -8,7 +8,8 @@
 #' @import methods
 #' @import Rcpp
 #' @import brms
-#' @importFrom rstan sampling
+#' @import StanHeaders
+#' @import rstan
 #' @importFrom rstantools rstan_config
 #' @importFrom RcppParallel RcppParallelLibs
 #' @importFrom stats as.formula

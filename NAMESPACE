@@ -3,6 +3,7 @@
 export(brm_surv)
 export(rmstpara)
 import(Rcpp)
+import(StanHeaders)
 import(brms)
 import(methods)
 importFrom(RcppParallel,RcppParallelLibs)
