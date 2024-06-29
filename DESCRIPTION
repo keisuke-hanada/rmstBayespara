@@ -11,6 +11,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+LazyData: true
 Biarch: true
 Depends: 
     R (>= 3.4.0)
@@ -23,8 +24,3 @@ Imports:
     zipfR (>= 0.6.7),
     stats (>= 4.3.0),
     crayon (>= 1.5.0)
-LinkingTo: 
-    StanHeaders (>= 2.30.0),
-    rstan (>= 2.30.0),
-    BH (>= 1.84.0)
-SystemRequirements: GNU Make

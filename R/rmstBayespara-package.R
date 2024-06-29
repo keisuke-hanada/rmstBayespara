@@ -4,7 +4,6 @@
 #'
 #' @name rmstBayespara-package
 #' @aliases rmstBayespara
-#' @useDynLib rmstBayespara
 #' @import methods
 #' @import brms
 #' @importFrom rstan stan_model
