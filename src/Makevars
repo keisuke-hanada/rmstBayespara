@@ -1,6 +1,6 @@
-CXX17FLAGS += -O3 -march=native -mtune=native
-CXX17FLAGS += -Wno-unused-variable -Wno-unused-function
-SHLIB_LDFLAGS += -Wl,--strip-all
-CXX17FLAGS += -O3 -march=native -mtune=native
-CXX17FLAGS += -Wno-unused-variable -Wno-unused-function
-SHLIB_LDFLAGS += -Wl,--strip-all
+SHLIB_LDFLAGS = $(SHLIB_CXXLDFLAGS)
+SHLIB_LD = $(SHLIB_CXXLD)
+
+CXX_STD = CXX17
+
+CXXFLAGS = -O2 -Wall -pedantic

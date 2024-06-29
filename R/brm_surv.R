@@ -59,7 +59,96 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
                      seed=seed,
                      chains=chains)
     }else if(random=="frailty"){
-      x <- rstan::sampling(stanmodels$exponential_frail,
+      exp_frail <- "
+        // generated with brms 2.21.0
+        functions {
+        }
+        data {
+          int<lower=1> N;  // total number of observations
+          vector[N] Y;  // response variable
+          array[N] int<lower=-1,upper=2> cens;  // indicates censoring
+          int<lower=1> K;  // number of population-level effects
+          matrix[N, K] X;  // population-level design matrix
+          int<lower=1> Kc;  // number of population-level effects after centering
+          // data for group-level effects of ID 1
+          int<lower=1> N_1;  // number of grouping levels
+          int<lower=1> M_1;  // number of coefficients per level
+          array[N] int<lower=1> J_1;  // grouping indicator per observation
+          // group-level predictor values
+          vector[N] Z_1_1;
+          int prior_only;  // should the likelihood be ignored?
+        }
+        transformed data {
+          matrix[N, Kc] Xc;  // centered version of X without an intercept
+          vector[Kc] means_X;  // column means of X before centering
+          for (i in 2:K) {
+            means_X[i - 1] = mean(X[, i]);
+            Xc[, i - 1] = X[, i] - means_X[i - 1];
+          }
+        }
+        parameters {
+          vector[Kc] b;  // regression coefficients
+          real Intercept;  // temporary intercept for centered predictors
+          vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+          vector<lower=0>[N_1] v;
+        }
+        transformed parameters {
+          real lprior = 0;  // prior contributions to the log posterior
+          lprior += student_t_lpdf(Intercept | 3, 5.3, 2.5);
+        }
+        model {
+          v~gamma(1/sd_1[1],1/sd_1[1]);
+          // likelihood including constants
+          if (!prior_only) {
+            // initialize linear predictor term
+            vector[N] mu = rep_vector(0.0, N);
+            mu += Intercept + Xc * b;
+            mu = exp(mu);
+            for (n in 1:N) {
+              // add more terms to the linear predictor
+              mu[n] = mu[n]*v[J_1[n]] ;
+            }
+            for (n in 1:N) {
+            // special treatment of censored data
+              if (cens[n] == 0) {
+                target += exponential_lpdf(Y[n] | inv(mu[n]));
+              } else if (cens[n] == 1) {
+                target += exponential_lccdf(Y[n] | inv(mu[n]));
+              } else if (cens[n] == -1) {
+                target += exponential_lcdf(Y[n] | inv(mu[n]));
+              }
+            }
+          }
+          // priors including constants
+          target += lprior;
+        }
+        generated quantities {
+          // actual population-level intercept
+          real b_Intercept = Intercept - dot_product(means_X, b);
+          vector[N] log_lik;
+          vector[N] mu = rep_vector(0.0, N);
+          mu += Intercept + Xc * b;
+          mu = exp(mu);
+          for (n in 1:N) {
+            // add more terms to the linear predictor
+            mu[n] = mu[n]*v[J_1[n]] ;
+          }
+          for (n in 1:N) {
+          // special treatment of censored data
+            if (cens[n] == 0) {
+              log_lik[n] = exponential_lpdf(Y[n] | inv(mu[n]));
+            } else if (cens[n] == 1) {
+              log_lik[n] = exponential_lccdf(Y[n] | inv(mu[n]));
+            } else if (cens[n] == -1) {
+              log_lik[n] = exponential_lcdf(Y[n] | inv(mu[n]));
+            }
+          }
+        }
+        "
+      base::cat(crayon::red("Compiling Stan program...\n"))
+      exp_frail_model <- rstan::stan_model(model_code = exp_frail)
+      base::cat(crayon::red("Start sampling \n"))
+      x <- rstan::sampling(exp_frail_model,
                            data=sdat,
                            iter=iter,
                            warmup=warmup,
@@ -76,7 +165,96 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
                      seed=seed,
                      chains=chains)
     }else if(random=="frailty"){
-      x <- rstan::sampling(stanmodels$weibull_frail,
+      weibull_frail <- "
+      // generated with brms 2.21.0
+      functions {
+      }
+      data {
+        int<lower=1> N;  // total number of observations
+        vector[N] Y;  // response variable
+        array[N] int<lower=-1,upper=2> cens;  // indicates censoring
+        int<lower=1> K;  // number of population-level effects
+        matrix[N, K] X;  // population-level design matrix
+        int<lower=1> Kc;  // number of population-level effects after centering
+        // data for group-level effects of ID 1
+        int<lower=1> N_1;  // number of grouping levels
+        int<lower=1> M_1;  // number of coefficients per level
+        array[N] int<lower=1> J_1;  // grouping indicator per observation
+        // group-level predictor values
+        vector[N] Z_1_1;
+        int prior_only;  // should the likelihood be ignored?
+      }
+      transformed data {
+        matrix[N, Kc] Xc;  // centered version of X without an intercept
+        vector[Kc] means_X;  // column means of X before centering
+        for (i in 2:K) {
+          means_X[i - 1] = mean(X[, i]);
+          Xc[, i - 1] = X[, i] - means_X[i - 1];
+        }
+      }
+      parameters {
+        vector[Kc] b;  // regression coefficients
+        real Intercept;  // temporary intercept for centered predictors
+        real<lower=0> shape;  // shape parameter
+        vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+        vector<lower=0>[N_1] v;
+      }
+      transformed parameters {
+        real lprior = 0;  // prior contributions to the log posterior
+        lprior += student_t_lpdf(Intercept | 3, 5.3, 2.5);
+        lprior += gamma_lpdf(shape | 0.01, 0.01);
+      }
+      model {
+        v~gamma(1/sd_1[1],1/sd_1[1]);
+        // likelihood including constants
+        if (!prior_only) {
+          // initialize linear predictor term
+          vector[N] mu = rep_vector(0.0, N);
+          mu += Intercept + Xc * b;
+          mu = exp(mu);
+          for (n in 1:N) {
+            // add more terms to the linear predictor
+            mu[n] = mu[n]/pow(v[J_1[n]],1/shape);
+          }
+          for (n in 1:N) {
+          // special treatment of censored data
+            if (cens[n] == 0) {
+              target += weibull_lpdf(Y[n] | shape, mu[n] / tgamma(1 + 1 / shape));
+            } else if (cens[n] == 1) {
+              target += weibull_lccdf(Y[n] | shape, mu[n] / tgamma(1 + 1 / shape));
+            } else if (cens[n] == -1) {
+              target += weibull_lcdf(Y[n] | shape, mu[n] / tgamma(1 + 1 / shape));
+            }
+          }
+        }
+        // priors including constants
+        target += lprior;
+      }
+      generated quantities {
+        // actual population-level intercept
+        real b_Intercept = Intercept - dot_product(means_X, b);
+        vector[N] log_lik;
+        vector[N] mu = rep_vector(0.0, N);
+        mu += Intercept + Xc * b;
+        mu = exp(mu);
+        for (n in 1:N) {
+          // add more terms to the linear predictor
+          mu[n] = mu[n]/pow(v[J_1[n]],1/shape);
+        }
+        for (n in 1:N) {
+        // special treatment of censored data
+            if (cens[n] == 0) {
+              log_lik[n] = weibull_lpdf(Y[n] | shape, mu[n] / tgamma(1 + 1 / shape));
+            } else if (cens[n] == 1) {
+              log_lik[n] = weibull_lccdf(Y[n] | shape, mu[n] / tgamma(1 + 1 / shape));
+            } else if (cens[n] == -1) {
+              log_lik[n] = weibull_lcdf(Y[n] | shape, mu[n] / tgamma(1 + 1 / shape));
+            }
+        }
+      }
+      "
+      weibull_frail_model <- rstan::stan_model(model_code = weibull_frail)
+      x <- rstan::sampling(weibull_frail_model,
                            data=sdat,
                            iter=iter,
                            warmup=warmup,
@@ -93,7 +271,87 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
                      seed=seed,
                      chains=chains)
     }else if(random=="frailty"){
-      x <- rstan::sampling(stanmodels$lognormal_frail,
+      ln_frail <- "
+      // generated with brms 2.21.0
+      functions {
+      }
+      data {
+        int<lower=1> N;  // total number of observations
+        vector[N] Y;  // response variable
+        array[N] int<lower=-1,upper=2> cens;  // indicates censoring
+        int<lower=1> K;  // number of population-level effects
+        matrix[N, K] X;  // population-level design matrix
+        int<lower=1> Kc;  // number of population-level effects after centering
+        // data for group-level effects of ID 1
+        int<lower=1> N_1;  // number of grouping levels
+        int<lower=1> M_1;  // number of coefficients per level
+        array[N] int<lower=1> J_1;  // grouping indicator per observation
+        // group-level predictor values
+        vector[N] Z_1_1;
+        int prior_only;  // should the likelihood be ignored?
+      }
+      transformed data {
+        matrix[N, Kc] Xc;  // centered version of X without an intercept
+        vector[Kc] means_X;  // column means of X before centering
+        for (i in 2:K) {
+          means_X[i - 1] = mean(X[, i]);
+          Xc[, i - 1] = X[, i] - means_X[i - 1];
+        }
+      }
+      parameters {
+        vector[Kc] b;  // regression coefficients
+        real Intercept;  // temporary intercept for centered predictors
+        real<lower=0> sigma;  // dispersion parameter
+        vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+        vector<lower=0>[N_1] v;
+      }
+      transformed parameters {
+        real lprior = 0;  // prior contributions to the log posterior
+        lprior += student_t_lpdf(Intercept | 3, 5.3, 2.5);
+        lprior += student_t_lpdf(sigma | 3, 0, 2.5)
+          - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+      }
+      model {
+        v~gamma(1/sd_1[1],1/sd_1[1]);
+        // likelihood including constants
+        if (!prior_only) {
+          // initialize linear predictor term
+          vector[N] mu = rep_vector(0.0, N);
+          mu += Intercept + Xc * b;
+          for (n in 1:N) {
+          // special treatment of censored data
+            if (cens[n] == 0) {
+      //        target += lognormal_lpdf(Y[n] | mu[n], sigma)+log(v[J_1[n]])+(v[J_1[n]]-1)*lognormal_lccdf(Y[n] | mu[n], sigma);
+              target += lognormal_lpdf(Y[n] | mu[n], sigma)+log(v[J_1[n]])+(v[J_1[n]]-1)*log(1-lognormal_cdf(Y[n] | mu[n], sigma));
+            } else if (cens[n] == 1) {
+              target += v[J_1[n]]*log(1-lognormal_cdf(Y[n] | mu[n], sigma));
+      //        target += v[J_1[n]]*lognormal_lccdf(Y[n] | mu[n], sigma);
+            }
+          }
+        }
+        // priors including constants
+        target += lprior;
+      }
+      generated quantities {
+        // actual population-level intercept
+        real b_Intercept = Intercept - dot_product(means_X, b);
+        vector[N] log_lik;
+        vector[N] mu = rep_vector(0.0, N);
+        mu += Intercept + Xc * b;
+        for (n in 1:N) {
+        // special treatment of censored data
+            if (cens[n] == 0) {
+              log_lik[n] = lognormal_lpdf(Y[n] | mu[n], sigma)+log(v[J_1[n]])+(v[J_1[n]]-1)*lognormal_lccdf(Y[n] | mu[n], sigma);
+            } else if (cens[n] == 1) {
+              log_lik[n] = v[J_1[n]]*lognormal_lccdf(Y[n] | mu[n], sigma);
+            }
+        }
+      }
+      "
+      base::cat(crayon::red("Compiling Stan program...\n"))
+      ln_frail_model <- rstan::stan_model(model_code = ln_frail)
+      base::cat(crayon::red("Start sampling \n"))
+      x <- rstan::sampling(ln_frail_model,
                            data=sdat,
                            iter=iter,
                            warmup=warmup,
@@ -102,21 +360,265 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
     }
   }else if(family=="log-logistic"){
     if(random=="fixed"){
-      x <- rstan::sampling(stanmodels$loglogistic,
+      ll_fixed <- "
+      // generated with brms 2.21.0
+      functions {
+      }
+      data {
+        int<lower=1> N;  // total number of observations
+        vector[N] Y;  // response variable
+        array[N] int<lower=-1,upper=2> cens;  // indicates censoring
+        int<lower=1> K;  // number of population-level effects
+        matrix[N, K] X;  // population-level design matrix
+        int<lower=1> Kc;  // number of population-level effects after centering
+        int prior_only;  // should the likelihood be ignored?
+      }
+      transformed data {
+        matrix[N, Kc] Xc;  // centered version of X without an intercept
+        vector[Kc] means_X;  // column means of X before centering
+        for (i in 2:K) {
+          means_X[i - 1] = mean(X[, i]);
+          Xc[, i - 1] = X[, i] - means_X[i - 1];
+        }
+      }
+      parameters {
+        vector[Kc] b;  // regression coefficients
+        real Intercept;  // temporary intercept for centered predictors
+        real<lower=1> shape;  // shape parameter
+      }
+      transformed parameters {
+        real lprior = 0;  // prior contributions to the log posterior
+        lprior += student_t_lpdf(Intercept | 3, 5.3, 2.5);
+        lprior += gamma_lpdf(shape | 0.01, 0.01);
+      }
+      model {
+        // likelihood including constants
+        if (!prior_only) {
+          // initialize linear predictor term
+          vector[N] mu = rep_vector(0.0, N);
+          mu += Intercept + Xc * b;
+          mu=exp(mu);
+          for (n in 1:N) {
+          // special treatment of censored data
+            if (cens[n] == 0) {
+              target += loglogistic_lpdf(Y[n] | mu[n], shape);
+            } else if (cens[n] == 1) {
+              target += log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+            }
+          }
+        }
+        // priors including constants
+        target += lprior;
+      }
+      generated quantities {
+        // actual population-level intercept
+        real b_Intercept = Intercept - dot_product(means_X, b);
+        vector[N] log_lik;
+        vector[N] mu = rep_vector(0.0, N);
+        mu += Intercept + Xc * b;
+        mu=exp(mu);
+        for (n in 1:N) {
+        // special treatment of censored data
+          if (cens[n] == 0) {
+            log_lik[n] = loglogistic_lpdf(Y[n] | mu[n], shape);
+          } else if (cens[n] == 1) {
+            log_lik[n] = log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+          }
+        }
+      }
+      "
+      base::cat(crayon::red("Compiling Stan program...\n"))
+      ll_fixed_model <- rstan::stan_model(model_code = ll_fixed)
+      base::cat(crayon::red("Start sampling \n"))
+      x <- rstan::sampling(ll_fixed_model,
                            data=sdat,
                            iter=iter,
                            warmup=warmup,
                            seed=seed,
                            chains=chains)
     }else if(random=="normal"){
-      x <- rstan::sampling(stanmodels$loglogistic_n,
+      ll_normal <- "
+      // generated with brms 2.21.0
+      functions {
+      }
+      data {
+        int<lower=1> N;  // total number of observations
+        vector[N] Y;  // response variable
+        array[N] int<lower=-1,upper=2> cens;  // indicates censoring
+        int<lower=1> K;  // number of population-level effects
+        matrix[N, K] X;  // population-level design matrix
+        int<lower=1> Kc;  // number of population-level effects after centering
+        // data for group-level effects of ID 1
+        int<lower=1> N_1;  // number of grouping levels
+        int<lower=1> M_1;  // number of coefficients per level
+        array[N] int<lower=1> J_1;  // grouping indicator per observation
+        // group-level predictor values
+        vector[N] Z_1_1;
+        int prior_only;  // should the likelihood be ignored?
+      }
+      transformed data {
+        matrix[N, Kc] Xc;  // centered version of X without an intercept
+        vector[Kc] means_X;  // column means of X before centering
+        for (i in 2:K) {
+          means_X[i - 1] = mean(X[, i]);
+          Xc[, i - 1] = X[, i] - means_X[i - 1];
+        }
+      }
+      parameters {
+        vector[Kc] b;  // regression coefficients
+        real Intercept;  // temporary intercept for centered predictors
+        real<lower=1> shape;  // shape parameter
+        vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+        array[M_1] vector[N_1] z_1;  // standardized group-level effects
+      }
+      transformed parameters {
+        vector[N_1] v;  // actual group-level effects
+        real lprior = 0;  // prior contributions to the log posterior
+        v = (sd_1[1] * (z_1[1]));
+        lprior += student_t_lpdf(Intercept | 3, 5.3, 2.5);
+        lprior += gamma_lpdf(shape | 0.01, 0.01);
+        lprior += student_t_lpdf(sd_1 | 3, 0, 2.5)
+          - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+      }
+      model {
+        // likelihood including constants
+        if (!prior_only) {
+          // initialize linear predictor term
+          vector[N] mu = rep_vector(0.0, N);
+          mu += Intercept + Xc * b;
+          for (n in 1:N) {
+            // add more terms to the linear predictor
+            mu[n] += v[J_1[n]] * Z_1_1[n];
+          }
+          mu = exp(mu);
+          for (n in 1:N) {
+          // special treatment of censored data
+            if (cens[n] == 0) {
+              target += loglogistic_lpdf(Y[n] | mu[n], shape);
+            } else if (cens[n] == 1) {
+              target += log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+            }
+          }
+        }
+        // priors including constants
+        target += lprior;
+        target += std_normal_lpdf(z_1[1]);
+      }
+      generated quantities {
+        // actual population-level intercept
+        real b_Intercept = Intercept - dot_product(means_X, b);
+        vector[N] log_lik;
+        vector[N] mu = rep_vector(0.0, N);
+        mu += Intercept + Xc * b;
+        for (n in 1:N) {
+          // add more terms to the linear predictor
+          mu[n] += v[J_1[n]] * Z_1_1[n];
+        }
+        mu=exp(mu);
+        for (n in 1:N) {
+        // special treatment of censored data
+          if (cens[n] == 0) {
+            log_lik[n] = loglogistic_lpdf(Y[n] | mu[n], shape);
+          } else if (cens[n] == 1) {
+            log_lik[n] = log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+          }
+        }
+      }
+      "
+      base::cat(crayon::red("Compiling Stan program...\n"))
+      ll_normal_model <- rstan::stan_model(model_code = ll_normal)
+      base::cat(crayon::red("Start sampling \n"))
+      x <- rstan::sampling(ll_normal_model,
                            data=sdat,
                            iter=iter,
                            warmup=warmup,
                            seed=seed,
                            chains=chains)
     }else if(random=="frailty"){
-      x <- rstan::sampling(stanmodels$loglogistic_frail,
+      ll_frail <- "
+      // generated with brms 2.21.0
+      functions {
+      }
+      data {
+        int<lower=1> N;  // total number of observations
+        vector[N] Y;  // response variable
+        array[N] int<lower=-1,upper=2> cens;  // indicates censoring
+        int<lower=1> K;  // number of population-level effects
+        matrix[N, K] X;  // population-level design matrix
+        int<lower=1> Kc;  // number of population-level effects after centering
+        // data for group-level effects of ID 1
+        int<lower=1> N_1;  // number of grouping levels
+        int<lower=1> M_1;  // number of coefficients per level
+        array[N] int<lower=1> J_1;  // grouping indicator per observation
+        // group-level predictor values
+        vector[N] Z_1_1;
+        int prior_only;  // should the likelihood be ignored?
+      }
+      transformed data {
+        matrix[N, Kc] Xc;  // centered version of X without an intercept
+        vector[Kc] means_X;  // column means of X before centering
+        for (i in 2:K) {
+          means_X[i - 1] = mean(X[, i]);
+          Xc[, i - 1] = X[, i] - means_X[i - 1];
+        }
+      }
+      parameters {
+        vector[Kc] b;  // regression coefficients
+        real Intercept;  // temporary intercept for centered predictors
+        real<lower=1> shape;  // shape parameter
+        vector<lower=0>[M_1] sd_1;  // group-level standard deviations
+        vector<lower=0>[N_1] v;
+      }
+      transformed parameters {
+        real lprior = 0;  // prior contributions to the log posterior
+        lprior += student_t_lpdf(Intercept | 3, 5.3, 2.5);
+        lprior += gamma_lpdf(shape | 0.01, 0.01);
+      }
+      model {
+        v~gamma(1/sd_1[1],1/sd_1[1]);
+        // likelihood including constants
+        if (!prior_only) {
+          // initialize linear predictor term
+          vector[N] mu = rep_vector(0.0, N);
+          mu += Intercept + Xc * b;
+          mu = exp(mu);
+          for (n in 1:N) {
+            // add more terms to the linear predictor
+            mu[n] = mu[n]*v[J_1[n]] ;
+          }
+          for (n in 1:N) {
+          // special treatment of censored data
+            if (cens[n] == 0) {
+              target += loglogistic_lpdf(Y[n] | mu[n], shape)+log(v[J_1[n]])+(v[J_1[n]]-1)*log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+            } else if (cens[n] == 1) {
+              target += v[J_1[n]]*log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+            }
+          }
+        }
+        // priors including constants
+        target += lprior;
+      }
+      generated quantities {
+        // actual population-level intercept
+        real b_Intercept = Intercept - dot_product(means_X, b);
+        vector[N] log_lik;
+        vector[N] mu = rep_vector(0.0, N);
+        mu += Intercept + Xc * b;
+        mu = exp(mu);
+        for (n in 1:N) {
+        // special treatment of censored data
+            if (cens[n] == 0) {
+              log_lik[n] = loglogistic_lpdf(Y[n] | mu[n], shape)+log(v[J_1[n]])+(v[J_1[n]]-1)*log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+            } else if (cens[n] == 1) {
+              log_lik[n] = v[J_1[n]]*log(1-loglogistic_cdf(Y[n] | mu[n], shape));
+            }
+        }
+      }
+      "
+      base::cat(crayon::red("Compiling Stan program...\n"))
+      ll_frail_model <- rstan::stan_model(model_code = ll_frail)
+      base::cat(crayon::red("Start sampling \n"))
+      x <- rstan::sampling(ll_frail_model,
                            data=sdat,
                            iter=iter,
                            warmup=warmup,
@@ -148,7 +650,11 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
   }
   post_sample <- post_sample[,1:(n_var+n_r)]
   if(!brms::is.brmsfit(x)){
-    post_sample <- post_sample[,c(length(var)+1, 1:length(var), (length(var)+2):n_var, n_var+1:n_r)]
+    if(random=="fixed"){
+      post_sample <- post_sample[,1:n_var]
+    }else{
+      post_sample <- post_sample[,c(length(var)+1, 1:length(var), (length(var)+2):n_var, n_var+1:n_r)]
+    }
   }
   colnames(post_sample) <- cname[1:(n_var+n_r)]
 

@@ -4,13 +4,12 @@
 #'
 #' @name rmstBayespara-package
 #' @aliases rmstBayespara
-#' @useDynLib rmstBayespara, .registration = TRUE
+#' @useDynLib rmstBayespara
 #' @import methods
-#' @import Rcpp
 #' @import brms
-#' @import rstan
+#' @importFrom rstan stan_model
+#' @importFrom rstan sampling
 #' @importFrom rstantools rstan_config
-#' @importFrom RcppParallel RcppParallelLibs
 #' @importFrom stats as.formula
 #' @importFrom stats pnorm
 #' @importFrom loo loo
