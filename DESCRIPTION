@@ -20,7 +20,8 @@ Imports:
     rstan (>= 2.30.0),
     rstantools (>= 2.4.0),
     stats (>= 4.3.0),
-    zipfR (>= 0.6.7)
+    zipfR (>= 0.6.7),
+    BH
 Biarch: true
 Encoding: UTF-8
 LazyData: true
