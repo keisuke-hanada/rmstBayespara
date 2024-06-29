@@ -29,7 +29,8 @@
 #' fit_x_r$post_sample
 #' ps_x_r<-fit_x_r$post_sample
 #' rmst_x_r<-rmstpara(tau=100, var=ps_x_r[,"b_intercept"]+ps_x_r[,"b_factor(arm)"],
-#'                    shape=ps_x_r[,"shape"], family="Weibull",random="frailty")
+#'                    shape=ps_x_r[,"shape"], frai=ps_x_r[,"sd_district"],
+#'                    family="Weibull",random="frailty")
 #' rmst_x_r
 #'
 #' @export
