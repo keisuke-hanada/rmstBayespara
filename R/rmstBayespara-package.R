@@ -9,6 +9,7 @@
 #' @import BH
 #' @import Rcpp
 #' @import RcppEigen
+#' @import StanHeaders
 #' @importFrom rstan stan_model
 #' @importFrom rstan sampling
 #' @importFrom rstantools rstan_config
