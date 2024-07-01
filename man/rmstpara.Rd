@@ -44,10 +44,13 @@ d <- data.frame(time=1:100,
       district=sample(1:5, size=100, replace=TRUE)
     )
 head(d)
+iter <- 100; warmup <- 50; chains <- 1;
 fit_x_r <- brm_surv(time="time", cnsr="1-status",
                     var=c("factor(arm)", "factor(sex)"),
                     rvar="district", data=d,
-                    family="Weibull", random="frailty")
+                    family="Weibull", random="frailty",
+                    iter=iter, warmup=warmup,
+                    chains=chains)
 fit_x_r$post_sample
 ps_x_r<-fit_x_r$post_sample
 rmst_x_r<-rmstpara(tau=100, var=ps_x_r[,"b_intercept"]+ps_x_r[,"b_factor(arm)"],
