@@ -48,7 +48,6 @@ A list of an object of class brmsfit or stanfit (see rstan and brms), sampling v
 A function of Bayesian regression models using stan for parametric survival time. Exponential, Weibull, log-normal, and log-logistic model with fixed-effect, random-effect and frailty-effect can be available.
 }
 \examples{
-\donttest{
 d <- data.frame(time=1:100,
       status=sample(0:1, size=100, replace=TRUE),
       arm=sample(c("t", "c"), size=100, replace=TRUE),
@@ -65,5 +64,5 @@ fit_x_r$fit
 fit_x_r$post_sample
 fit_x_r$waic
 fit_x_r$loo
-}
+
 }

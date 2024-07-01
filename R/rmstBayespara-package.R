@@ -10,14 +10,14 @@
 #' @import Rcpp
 #' @import RcppEigen
 #' @import StanHeaders
+#' @importFrom rstantools rstan_config
 #' @importFrom rstan stan_model
 #' @importFrom rstan sampling
-#' @importFrom rstantools rstan_config
-#' @importFrom stats as.formula
-#' @importFrom stats pnorm
 #' @importFrom loo loo
 #' @importFrom loo waic
 #' @importFrom loo extract_log_lik
+#' @importFrom stats as.formula
+#' @importFrom stats pnorm
 #' @importFrom zipfR Ibeta
 #' @importFrom zipfR Igamma
 #'
