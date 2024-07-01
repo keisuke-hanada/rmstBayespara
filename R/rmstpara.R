@@ -14,6 +14,7 @@
 #' @return An object of class brmsfit or stanfit. See rstan and brms.
 #'
 #' @examples
+#' \dontrun{
 #' d <- data.frame(time=1:100,
 #'       status=sample(0:1, size=100, replace=TRUE),
 #'       arm=sample(c("t", "c"), size=100, replace=TRUE),
@@ -31,7 +32,7 @@
 #'                    shape=ps_x_r[,"shape"], rvar=ps_x_r[,"sd_district"],
 #'                    family="Weibull",random="frailty")
 #' rmst_x_r
-#'
+#'}
 #'
 #' @export
 rmstpara <- function(tau, var, rvar=NA, shape=NA, sigma=NA, family="exponential", random="fixed"){
