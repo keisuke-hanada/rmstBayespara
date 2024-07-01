@@ -113,7 +113,7 @@ rmstpara <- function(tau, var, rvar=NA, shape=NA, sigma=NA, family="exponential"
           stop("'rvar' variable need to calculate RMST for log-logistic random-effect model.")
         }
       }else if(random=="frailty"){
-        if(!base::is.na(frai)[1]){
+        if(!base::is.na(rvar)[1]){
           return(rvar*base::exp(var)*zipfR::Ibeta((tau/base::exp(var))**shape/(1+(tau/base::exp(var))**shape), 1+1/shape, rvar-1/shape, lower=TRUE)+
                    tau/((1+(tau/base::exp(var))**shape))**rvar)
         }else{
