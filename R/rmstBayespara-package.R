@@ -7,6 +7,8 @@
 #' @import methods
 #' @import brms
 #' @import BH
+#' @import Rcpp
+#' @import RcppEigen
 #' @importFrom rstan stan_model
 #' @importFrom rstan sampling
 #' @importFrom rstantools rstan_config
