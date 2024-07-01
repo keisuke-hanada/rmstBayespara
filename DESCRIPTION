@@ -21,6 +21,8 @@ Imports:
     rstantools (>= 2.4.0),
     stats (>= 4.3.0),
     zipfR (>= 0.6.7)
+LinkingTo:
+    rstan (>= 2.32.0)
 Biarch: true
 Encoding: UTF-8
 LazyData: true
