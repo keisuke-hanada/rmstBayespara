@@ -7,7 +7,7 @@
 rmstpara(
   tau,
   var,
-  frai = NA,
+  rvar = NA,
   shape = NA,
   sigma = NA,
   family = "exponential",
@@ -19,7 +19,7 @@ rmstpara(
 
 \item{var}{A vector of covariate values.}
 
-\item{frai}{a vector of frailty effects. It is necessary when log-normal frailty and log-logistic frailty models.}
+\item{rvar}{a vector of frailty effects. It is necessary when log-normal frailty and log-logistic frailty models.}
 
 \item{shape}{a vector of shape parameters. It is necessary when Weibull and log-logistic models.}
 
@@ -51,7 +51,7 @@ fit_x_r <- brm_surv(time="time", cnsr="1-status",
 fit_x_r$post_sample
 ps_x_r<-fit_x_r$post_sample
 rmst_x_r<-rmstpara(tau=100, var=ps_x_r[,"b_intercept"]+ps_x_r[,"b_factor(arm)"],
-                   shape=ps_x_r[,"shape"], frai=ps_x_r[,"sd_district"],
+                   shape=ps_x_r[,"shape"], rvar=ps_x_r[,"sd_district"],
                    family="Weibull",random="frailty")
 rmst_x_r
 
