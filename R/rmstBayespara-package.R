@@ -6,10 +6,6 @@
 #' @aliases rmstBayespara
 #' @import methods
 #' @import brms
-#' @import BH
-#' @import Rcpp
-#' @import RcppEigen
-#' @importFrom rstantools rstan_config
 #' @importFrom rstan stan_model
 #' @importFrom rstan sampling
 #' @importFrom loo loo
