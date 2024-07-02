@@ -17,8 +17,7 @@
 #'
 #' @return A list of an object of class brmsfit or stanfit (see rstan and brms), sampling values from posterior distribution, leave-one-out cross-validation, and widely applicable information criterions.
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' d <- data.frame(time=1:100,
 #'       status=sample(0:1, size=100, replace=TRUE),
 #'       arm=sample(c("t", "c"), size=100, replace=TRUE),
@@ -35,7 +34,7 @@
 #' fit_x_r$post_sample
 #' fit_x_r$waic
 #' fit_x_r$loo
-#' }
+#'
 #'
 #' @export
 brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed", data, iter=2000, warmup=1000, seed=NA, chains=4){

@@ -36,7 +36,7 @@ An object of class brmsfit or stanfit. See rstan and brms.
 A function of calculating restricted mean survival time via parametric models. Exponential, Weibull, log-normal and log-logistic models are available.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 d <- data.frame(time=1:100,
       status=sample(0:1, size=100, replace=TRUE),
       arm=sample(c("t", "c"), size=100, replace=TRUE),
@@ -54,6 +54,6 @@ rmst_x_r<-rmstpara(tau=100, var=ps_x_r[,"b_intercept"]+ps_x_r[,"b_factor(arm)"],
                    shape=ps_x_r[,"shape"], rvar=ps_x_r[,"sd_district"],
                    family="Weibull",random="frailty")
 rmst_x_r
-}
 
+\dontshow{\}) # examplesIf}
 }
