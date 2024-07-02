@@ -9,7 +9,7 @@ Authors@R: c(
   )
 Description: Restricted mean survival time via parametric Bayesian
     approach with cluster effect.
-License: MIT + file LICENSE
+License: GPL (>= 3)
 Depends: 
     R (>= 3.4.0)
 Imports: 
