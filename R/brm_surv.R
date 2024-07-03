@@ -146,9 +146,9 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
           }
         }
         "
-      base::cat(crayon::red("Compiling Stan program...\n"))
+      base::message(crayon::red("Compiling Stan program...\n"))
       exp_frail_model <- rstan::stan_model(model_code = exp_frail)
-      base::cat(crayon::red("Start sampling \n"))
+      base::message(crayon::red("Start sampling \n"))
       x <- rstan::sampling(exp_frail_model,
                            data=sdat,
                            iter=iter,
@@ -349,9 +349,9 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
         }
       }
       "
-      base::cat(crayon::red("Compiling Stan program...\n"))
+      base::message(crayon::red("Compiling Stan program...\n"))
       ln_frail_model <- rstan::stan_model(model_code = ln_frail)
-      base::cat(crayon::red("Start sampling \n"))
+      base::message(crayon::red("Start sampling \n"))
       x <- rstan::sampling(ln_frail_model,
                            data=sdat,
                            iter=iter,
@@ -428,9 +428,9 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
         }
       }
       "
-      base::cat(crayon::red("Compiling Stan program...\n"))
+      base::message(crayon::red("Compiling Stan program...\n"))
       ll_fixed_model <- rstan::stan_model(model_code = ll_fixed)
-      base::cat(crayon::red("Start sampling \n"))
+      base::message(crayon::red("Start sampling \n"))
       x <- rstan::sampling(ll_fixed_model,
                            data=sdat,
                            iter=iter,
@@ -526,9 +526,9 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
         }
       }
       "
-      base::cat(crayon::red("Compiling Stan program...\n"))
+      base::message(crayon::red("Compiling Stan program...\n"))
       ll_normal_model <- rstan::stan_model(model_code = ll_normal)
-      base::cat(crayon::red("Start sampling \n"))
+      base::message(crayon::red("Start sampling \n"))
       x <- rstan::sampling(ll_normal_model,
                            data=sdat,
                            iter=iter,
@@ -616,9 +616,9 @@ brm_surv <- function(time, cnsr, var, rvar, family="exponential", random="fixed"
         }
       }
       "
-      base::cat(crayon::red("Compiling Stan program...\n"))
+      base::message(crayon::red("Compiling Stan program...\n"))
       ll_frail_model <- rstan::stan_model(model_code = ll_frail)
-      base::cat(crayon::red("Start sampling \n"))
+      base::message(crayon::red("Start sampling \n"))
       x <- rstan::sampling(ll_frail_model,
                            data=sdat,
                            iter=iter,

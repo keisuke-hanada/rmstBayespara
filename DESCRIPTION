@@ -7,8 +7,13 @@ Authors@R: c(
     person("Masahiro", "Kojima", role = "aut",
            comment = c(ORCID = "0000-0003-0867-7692"))
   )
-Description: Restricted mean survival time via parametric Bayesian
-    approach with cluster effect.
+Description: The parametric Bayes analysis for the 
+    restricted mean survival time (RMST) with cluster effect,
+    as described in Hanada and Kojima (2024) <doi:10.48550/arXiv.2406.06071>.
+    Bayes estimation with random-effect and frailty-effect can be applied to 
+    several parametric models useful in survival time analysis.
+    The RMST under these parametric models can be computed from 
+    the obtained posterior samples.
 License: GPL (>= 3)
 Depends: 
     R (>= 3.4.0)
